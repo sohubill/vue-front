@@ -3,15 +3,15 @@
  * @Author: 吻风
  * @Date: 2021-08-02 13:06:14
  * @LastEditors: 吻风
- * @LastEditTime: 2021-08-02 17:51:47
+ * @LastEditTime: 2021-08-03 00:13:53
 -->
 <template>
   <div id="app">
     <div class="layui-container">
       <form class="layui-form layui-form-pane">
-        <div class="layui-form-item">
+        <div class="layui-form-item" :class="{'form-group--error':$v.account.$error}">
           <label class="layui-form-label">用户名</label>
-          <div class="layui-input-block">
+          <div class="layui-input-inline">
             <input
               type="text"
               name="title"
@@ -20,8 +20,11 @@
               placeholder="请输入用户名"
               autocomplete="off"
               class="layui-input"
-              v-model="name"
+              v-model.trim="model"
+              @blur="setAccount($event.target.value)"
             />
+            <div class="error layui-form-mid" v-if="!$v.account.required">用户名不得为空</div>
+            <div class="error layui-form-mid" v-if="!$v.account.email">用户名必须是邮箱</div>
           </div>
         </div>
         <div class="layui-form-item">
@@ -64,6 +67,7 @@
 
 <script>
 import axios from 'axios'
+import { required, email } from 'vuelidate/lib/validators'
 export default {
   name: 'app',
   data () {
@@ -73,6 +77,18 @@ export default {
       password: '',
       code: '',
       errorMsg: []
+    }
+  },
+  validations: {
+    account: {
+      required,
+      email
+    },
+    password: {
+      required
+    },
+    code: {
+      required
     }
   },
   mounted () {
@@ -88,6 +104,11 @@ export default {
           }
         }
       })
+    },
+    setAccount (value) {
+      console.log(value)
+      this.account = value
+      this.$v.account.$touch()
     },
     checkForm () {
       this.errorMsg = []
@@ -125,5 +146,13 @@ input {
   position: relative;
   top: -9px;
   left: 2px;
+}
+.error{
+  display: none;
+}
+.form-group--error{
+  .error{
+    display: block;
+  }
 }
 </style>

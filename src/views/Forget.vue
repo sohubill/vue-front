@@ -3,7 +3,7 @@
  * @Author: 吻风
  * @Date: 2021-08-06 21:50:22
  * @LastEditors: 吻风
- * @LastEditTime: 2021-08-07 11:38:00
+ * @LastEditTime: 2021-08-09 22:31:12
 -->
 <template>
   <div class="layui-container fly-marginTop">
@@ -62,43 +62,46 @@
             <div class="layui-form layui-form-pane">
               <form method="post">
                 <div class="layui-form-item">
-                  <label for="L_email" class="layui-form-label">用户名</label>
-                  <div class="layui-input-inline">
-                    <input
-                      type="text"
-                      name="username"
-                      v-model="username"
-                      v-validate="'required|email'"
-                      placeholder="请输入用户名"
-                      autocomplete="off"
-                      class="layui-input"
-                    />
-                  </div>
-                  <div class="layui-form-mid">
-                    <span style="color: #c00;">hello</span>
-                  </div>
-                </div>
-                <div class="layui-form-item">
-                  <div class="layui-row">
-                    <label for="L_vercode" class="layui-form-label">验证码</label>
+                  <validation-provider rules="required|email" v-slot="{errors}">
+                    <label for="L_email" class="layui-form-label">用户名</label>
                     <div class="layui-input-inline">
                       <input
                         type="text"
-                        name="code"
-                        v-model="code"
-                        v-validate="'required|length:4'"
-                        placeholder="请输入验证码"
+                        name="username"
+                        v-model="username"
+                        placeholder="请输入用户名"
                         autocomplete="off"
                         class="layui-input"
                       />
                     </div>
-                    <div class>
-                      <span class="svg" style="color: #c00;" @click="_getCode()" v-html="svg"></span>
+                    <div class="layui-form-mid">
+                      <span style="color: #c00;">{{errors[0]}}</span>
                     </div>
-                  </div>
+                  </validation-provider>
+
+                </div>
+                <div class="layui-form-item">
+                  <validation-provider rules="required|length:4" v-slot="{errors}">
+                    <div class="layui-row">
+                      <label for="L_vercode" class="layui-form-label">验证码</label>
+                      <div class="layui-input-inline">
+                        <input
+                          type="text"
+                          name="code"
+                          v-model="code"
+                          placeholder="请输入验证码"
+                          autocomplete="off"
+                          class="layui-input"
+                        />
+                      </div>
+                      <div class>
+                        <span class="svg" style="color: #c00;" @click="_getCode()" v-html="svg"></span>
+                      </div>
+                    </div>
                   <div class="layui-row">
-                    <span style="color: #c00;">hello</span>
+                    <span style="color: #c00;">{{errors[0]}}</span>
                   </div>
+                  </validation-provider>
                 </div>
                 <div class="layui-form-item">
                   <button type="button" class="layui-btn" alert="1" @click="submit()">提交</button>
@@ -113,10 +116,22 @@
 </template>
 
 <script>
-// import { getCode, forget } from '@/api/login'
+import { getCode, forget } from '@/api/login'
+import { ValidationProvider, extend } from 'vee-validate'
+import * as rules from 'vee-validate/dist/rules'
+import { messages } from 'vee-validate/dist/locale/zh_CN.json'
+Object.keys(rules).forEach(rule => {
+  extend(rule, {
+    ...rules[rule], // copies rule configuration
+    message: messages[rule] // assign message
+  })
+})
 
 export default {
   name: 'forget',
+  components: {
+    ValidationProvider
+  },
   data () {
     return {
       username: '',
@@ -129,23 +144,22 @@ export default {
   },
   methods: {
     _getCode () {
-      // getCode().then((res) => {
-      //   console.log(res)
-      //   if (res.code === 200) {
-      //     this.svg = res.data
-      //   }
-      // })
+      getCode().then((res) => {
+        if (res.code === 200) {
+          this.svg = res.data
+        }
+      })
     },
     submit () {
-      // forget({
-      //   username: this.username,
-      //   code: this.code
-      // }).then((res) => {
-      //   console.log(res)
-      //   if (res.code === 200) {
-      //     alert('邮件发送成功')
-      //   }
-      // })
+      forget({
+        username: this.username,
+        code: this.code
+      }).then((res) => {
+        console.log(res)
+        if (res.code === 200) {
+          alert('邮件发送成功')
+        }
+      })
     }
   }
 }

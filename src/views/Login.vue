@@ -3,7 +3,7 @@
  * @Author: 吻风
  * @Date: 2021-08-06 21:50:07
  * @LastEditors: 吻风
- * @LastEditTime: 2021-08-08 12:41:35
+ * @LastEditTime: 2021-08-09 21:34:28
 -->
 <template>
   <div class="layui-container fly-marginTop">
@@ -132,7 +132,6 @@
 </template>
 
 <script>
-// import { getCode } from '@/api/login'
 import { ValidationProvider, extend } from 'vee-validate'
 import * as rules from 'vee-validate/dist/rules'
 import { messages } from 'vee-validate/dist/locale/zh_CN.json'

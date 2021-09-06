@@ -3,7 +3,7 @@
  * @Author: 吻风
  * @Date: 2021-08-06 21:50:07
  * @LastEditors: 吻风
- * @LastEditTime: 2021-09-06 15:50:48
+ * @LastEditTime: 2021-09-06 18:38:41
 -->
 <template>
   <div class="layui-container fly-marginTop">
@@ -30,10 +30,10 @@
                       v-slot="{ errors }"
                     >
                       <label class="layui-form-label">用户名</label>
-                      <div class="layui-input-inline">
+                      <div class="layui-input-inline" >
                         <input
                           type="text"
-                          name="用户名"
+                          name="username"
                           v-model="username"
                           placeholder="请输入用户名"
                           autocomplete="off"

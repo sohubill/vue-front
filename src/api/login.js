@@ -8,7 +8,7 @@
 import request from '@/utils/request.js'
 
 const getCode = (sid) => {
-  return request.get('/getCaptcha', {
+  return request.get('/public/getCaptcha', {
     params: {
       sid
     }

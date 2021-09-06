@@ -3,7 +3,7 @@
  * @Author: 吻风
  * @Date: 2021-08-06 21:50:07
  * @LastEditors: 吻风
- * @LastEditTime: 2021-09-05 22:19:50
+ * @LastEditTime: 2021-09-06 15:50:48
 -->
 <template>
   <div class="layui-container fly-marginTop">
@@ -69,6 +69,7 @@
                   <validation-provider
                     rules="required|length:4"
                     v-slot="{ errors }"
+                    ref='code'
                   >
                     <div class="layui-form-item">
                       <div class="layui-row">
@@ -152,6 +153,7 @@ export default {
     }
   },
   mounted () {
+    window.vue = this
     let sid = ''
     if (localStorage.getItem('sid')) {
       sid = localStorage.getItem('sid')
@@ -175,10 +177,27 @@ export default {
       this.$refs.observer.validate().then(valid => {
         if (valid) {
           login({
-            name: this.username,
+            username: this.username,
             password: this.password,
             code: this.code,
             sid: this.$store.state.sid
+          }).then(res => {
+            if (res.code === 200) {
+              this.username = ''
+              this.password = ''
+              this.code = ''
+              requestAnimationFrame(() => {
+                this.$refs.observer.reset()
+              })
+            } else if (res.code === 1000) {
+              this.$refs.code.setErrors([res.msg])
+            } else {
+              this.$alert(res.msg)
+            }
+          }).catch(err => {
+            console.log(err.response.data)
+            // const data = err.response.data
+            // this.$alert(data.msg)
           })
         }
       })

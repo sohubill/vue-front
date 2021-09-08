@@ -1,4 +1,4 @@
-version: '2'
+version: 2
 jobs:
   build:
     docker:
@@ -11,6 +11,10 @@ jobs:
         #   fingerprints:
         #     - ''
         # - checkout
-        - run: echo "a first hello"
-        - run: npm -v 
+        - run:
+            name: 'print'
+            command: echo "a first hello"
+        - run:
+            name: 'node version'
+            command: npm -v
 

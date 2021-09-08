@@ -3,7 +3,7 @@
  * @Author: 吻风
  * @Date: 2021-08-06 21:50:07
  * @LastEditors: 吻风
- * @LastEditTime: 2021-09-06 18:38:41
+ * @LastEditTime: 2021-09-07 11:59:20
 -->
 <template>
   <div class="layui-container fly-marginTop">
@@ -194,6 +194,7 @@ export default {
             } else {
               this.$alert(res.msg)
             }
+            this._getCode()
           }).catch(err => {
             console.log(err.response.data)
             // const data = err.response.data

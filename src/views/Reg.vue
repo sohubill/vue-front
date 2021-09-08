@@ -3,7 +3,7 @@
  * @Author: 吻风
  * @Date: 2021-08-06 21:50:14
  * @LastEditors: 吻风
- * @LastEditTime: 2021-09-06 18:34:33
+ * @LastEditTime: 2021-09-07 11:54:56
 -->
 <template>
   <div class="layui-container fly-marginTop">
@@ -20,7 +20,7 @@
             <div class="layui-form layui-form-pane">
               <validation-observer ref="observer">
                 <form method="post">
-                  <validation-provider rules="required|email" v-slot="{ errors }" name="用户名">
+                  <validation-provider rules="required|email" v-slot="{ errors }" name="username">
                     <div class="layui-form-item">
                       <div class="layui-row">
                         <label for="L_email" class="layui-form-label">用户名</label>
@@ -41,13 +41,13 @@
                       </div>
                     </div>
                   </validation-provider>
-                  <validation-provider rules="required|min:4" v-slot="{ errors }" name="昵称">
+                  <validation-provider rules="required|min:4" v-slot="{ errors }" name="name" ref="name">
                     <div class="layui-form-item">
                       <label for="L_username" class="layui-form-label">昵称</label>
                       <div class="layui-input-inline">
                         <input
                           type="text"
-                          name="name"
+                          name="昵称"
                           v-model="name"
                           placeholder="请输入昵称"
                           autocomplete="off"
@@ -59,7 +59,7 @@
                       </div>
                     </div>
                   </validation-provider>
-                  <validation-provider rules= "required|min:6|max:16" v-slot="{errors}" name ="密码"  vid="password">
+                  <validation-provider rules= "required|min:6|max:16" v-slot="{errors}" name ="password"  vid="password">
                     <div class="layui-form-item">
                       <div class="layui-row">
                         <label for="L_pass" class="layui-form-label">密码</label>
@@ -81,7 +81,7 @@
                       </div>
                     </div>
                   </validation-provider>
-                  <validation-provider rules = "required|min:6|max:16|confirmed:password" name="确认密码" v-slot="{errors}">
+                  <validation-provider rules = "required|min:6|max:16|confirmed:password" name="repassword" v-slot="{errors}">
                     <div class="layui-form-item">
                       <div class="layui-row">
                         <label for="L_repass" class="layui-form-label">确认密码</label>
@@ -101,7 +101,7 @@
                       </div>
                     </div>
                   </validation-provider>
-                  <validation-provider rules= "required|length:4" v-slot={errors} name="验证码">
+                  <validation-provider rules= "required|length:4" v-slot={errors} name="code">
                     <div class="layui-form-item">
                       <div class="layui-row">
                         <label for="L_vercode" class="layui-form-label">验证码</label>
@@ -125,7 +125,7 @@
                     </div>
                   </validation-provider>
                   <div class="layui-form-item">
-                    <button class="layui-btn" lay-filter="*" lay-submit>立即注册</button>
+                    <button class="layui-btn" type='button' @click="submit()">立即注册</button>
                   </div>
                   <div class="layui-form-item fly-form-app">
                     <span>或者直接使用社交账号快捷注册</span>
@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import { getCode } from '@/api/login'
+import { getCode, reg } from '@/api/login'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 export default {
   name: 'reg',
@@ -168,7 +168,8 @@ export default {
       password: '',
       repassword: '',
       code: '',
-      svg: ''
+      svg: '',
+      sid: ''
     }
   },
   mounted () {
@@ -176,11 +177,50 @@ export default {
   },
   methods: {
     _getCode () {
-      var sid = this.$store.state.sid
-      getCode(sid).then(res => {
+      this.sid = this.$store.state.sid
+      getCode(this.sid).then(res => {
         if (res.code === 200) {
           this.svg = res.data
         }
+      })
+    },
+    submit () {
+      this.$refs.observer.validate().then(valid => {
+        console.log(valid)
+        if (!valid) {
+          return
+        }
+        reg({
+          username: this.username,
+          name: this.name,
+          password: this.password,
+          code: this.code,
+          sid: this.sid
+        }).then(res => {
+          if (res.code === 200) {
+            this.username = ''
+            this.password = ''
+            this.repassword = ''
+            this.name = ''
+            this.code = ''
+            requestAnimationFrame(() => {
+              this.$refs.observer.reset()
+            })
+            this.$alert(res.msg)
+            setTimeout(() => {
+              this.$router.push('/login')
+            }, 1000)
+            console.log(res.data)
+          } else {
+            console.log(res)
+            this.$refs.observer.setErrors(res.msg)
+          }
+          this._getCode()
+        }).catch(err => {
+          this.$alert(err.msg)
+          console.log(err)
+          this._getCode()
+        })
       })
     }
   }

@@ -7,14 +7,17 @@ jobs:
       only:
         - master
     steps:
-        # - add_ssh_keys:
-        #   fingerprints:
-        #     - ''
-        # - checkout
-      - run:
-          name: 'print'
-          command: echo "a first hello"
+      - add_ssh_keys:
+        fingerprints:
+          - '4b:7a:a7:4b:7c:af:93:15:02:f8:8a:96:9b:ec:48:cb'
+      - checkout
       - run:
           name: 'node version'
           command: npm -v
+      - run:
+          name: install
+          command: yarn install
+      - run:
+          name: build
+          command: yarn build
 

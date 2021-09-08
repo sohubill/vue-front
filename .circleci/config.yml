@@ -6,15 +6,9 @@ jobs:
     branches:
       only:
         - master
-      steps:
-        # - add_ssh_keys:
-        #   fingerprints:
-        #     - ''
-        # - checkout
-        - run:
-            name: 'print'
-            command: echo "a first hello"
-        - run:
-            name: 'node version'
-            command: npm -v
+    step:
+      - run:
+          name: "print"
+          command: npm -v
+
 
